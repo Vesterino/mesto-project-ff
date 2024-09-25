@@ -1,4 +1,4 @@
-const initialCards = [
+export const initialCards = [
     {
       name: "Осень",
       link: "https://unsplash.com/photos/background-pattern-zKAYpLmPHdc",
