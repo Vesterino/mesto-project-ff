@@ -1,45 +1,18 @@
 import './pages/index.css';
-import { initialCards } from './scripts/cards';
+import { initialCards } from './components/cards';
+import { createCard, deleteCard, likeCard } from './components/card';
+import { openPopup, closePopup } from './components/modal';
 
-// @todo: Темплейт карточки
 
-const cardTemplate = document.querySelector('#card-template').content;
-
-// @todo: DOM узлы
+// DOM узлы
 
 const cardsList = document.querySelector('.places__list');
 
-// @todo: Функция создания карточки
 
-function createCard(card, deleteCard, likeCard, openPopupImage) {
-    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
-    
-    cardElement.querySelector('.card__title').textContent = card.name;
-    const cardImage = cardElement.querySelector('.card__image');
-    cardImage.src = card.link;
-    cardImage.alt = card.name;
-
-    const deleteButton = cardElement.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', () => deleteCard(cardElement));
-
-    const likeButton = cardElement.querySelector('.card__like-button')
-    likeButton.addEventListener('click', likeCard);
-
-    cardImage.addEventListener('click', openPopupImage);
-
-    return cardElement;
-};
-
-// @todo: Функция удаления карточки
-
-function deleteCard(card) {
-    card.remove()
-};
-
-// @todo: Вывести карточки на страницу
+// Выведение карточек на страницу
 
 initialCards.forEach(function(card) {
-    cardsList.append(createCard(card, deleteCard, likeCard));
+    cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage));
 });
 
 // Попапы
@@ -64,36 +37,22 @@ popups.forEach(popup => {
     popup.classList.add('popup_is-animated');
 })
 
-// Функции открытия каждого попапа
-
-function openPopupEdit() {
-    popupEdit.classList.add('popup_is-opened');
-}
-
-function openPopupNewCard() {
-    popupNewCard.classList.add('popup_is-opened');
-}
-
-function openPopupImage() {
-    popupImage.classList.add('popup_is-opened');
-}
-
-// Слушатели каждого попапа
+// Слушатели попапов
 
 buttonEditProfile.addEventListener('click', () => {
     inputNameProfile.value = titleProfile.textContent;
     inputDescriptionProfile.value = descriptionProfile.textContent;
-    openPopupEdit();
+    openPopup(popupEdit);
 });
 
-buttonNewCard.addEventListener('click', openPopupNewCard);
-buttonImage.addEventListener('click', openPopupImage);
+buttonNewCard.addEventListener('click', () => {
+    openPopup(popupNewCard);
+});
+buttonImage.addEventListener('click', () => {
+    openPopup(popupImage);
+});
 
-// Функция закрытия попапа
-
-function closePopup(popup) {
-    popup.classList.remove('popup_is-opened');
-}
+// Перебор закрытия попапов
 
 buttonClosePopup.forEach(function(button) {
     button.addEventListener('click', () => {
@@ -107,11 +66,15 @@ buttonClosePopup.forEach(function(button) {
     });
 });
 
+// Закрытие попапа через оверлей
+
 document.addEventListener('click', evt => {
     if (evt.target.classList.contains('popup')) {
         closePopup(evt.target.closest('.popup'));
     }
 });
+
+// Закрытие попапа через клавишу "Escape"
 
 document.addEventListener('keydown', evt => {
     if (evt.key === 'Escape') {
@@ -155,7 +118,7 @@ function addCard(evt) {
         link: cardLink,
     }
 
-    const newElement = createCard(newCard, deleteCard, likeCard, openPopupImage);
+    const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage);
     cardsList.prepend(newElement);
     closePopup(popupNewCard);
     formElementAddCard.reset();
@@ -163,16 +126,14 @@ function addCard(evt) {
 
 formElementAddCard.addEventListener('submit', addCard);
 
-// Функция лайка
-
-function likeCard(evt) {
-    evt.target.classList.toggle('card__like-button_is-active');
-}
-
 // Открытие попап картинки
 
-popupImage.addEventListener('click', openPopupImage({
-        src: popupImage.querySelector('.popup__image').src,
-        alt: popupImage.querySelector('.popup_image').alt,
-    }));
+const popupCardImage = document.querySelector('.popup__image');
+const popupCardCaption = document.querySelector('.popup__caption');
 
+function previewCardImage(linkValue, nameValue) {
+    popupCardImage.src = linkValue;
+    popupCardImage.alt = nameValue;
+    popupCardCaption.textContent = nameValue;
+    openPopup(popupImage);
+}
