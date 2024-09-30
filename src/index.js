@@ -25,7 +25,6 @@ const popupImage = document.querySelector('.popup_type_image');
 
 const buttonEditProfile = document.querySelector('.profile__edit-button');
 const buttonNewCard = document.querySelector('.profile__add-button');
-const buttonsClosePopups = document.querySelectorAll('.popup__close');
 
 // Анимация попапов
 

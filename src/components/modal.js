@@ -2,8 +2,8 @@
 
 function openPopup(popup) {
     popup.classList.add('popup_is-opened');
-    document.addEventListener('click', handleOverlay);
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('click', handleOverlay);
 }
 
 // Функция закрытия попапа
@@ -26,8 +26,8 @@ function handleEscape(evt) {
     if (evt.key === 'Escape') {
         const openedPopup = document.querySelector('.popup_is-opened');
         closePopup(openedPopup);
-        document.removeEventListener('click', handleOverlay);
         document.removeEventListener('keydown', handleEscape);
+        document.removeEventListener('click', handleOverlay);
     }
 };
 
