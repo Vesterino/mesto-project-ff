@@ -1,7 +1,7 @@
 import './pages/index.css';
 import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard } from './components/card';
-import { openPopup, closePopup } from './components/modal';
+import { openPopup, closePopup, handleOverlay, handleEscape } from './components/modal';
 
 
 // DOM узлы
@@ -17,7 +17,6 @@ initialCards.forEach(function(card) {
 
 // Попапы
 
-const popup = document.querySelector('.popup');
 const popupEdit = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
@@ -26,8 +25,7 @@ const popupImage = document.querySelector('.popup_type_image');
 
 const buttonEditProfile = document.querySelector('.profile__edit-button');
 const buttonNewCard = document.querySelector('.profile__add-button');
-const buttonImage = document.querySelector('.card__image');
-const buttonClosePopup = document.querySelectorAll('.popup__close');
+const buttonsClosePopups = document.querySelectorAll('.popup__close');
 
 // Анимация попапов
 
@@ -48,40 +46,22 @@ buttonEditProfile.addEventListener('click', () => {
 buttonNewCard.addEventListener('click', () => {
     openPopup(popupNewCard);
 });
-buttonImage.addEventListener('click', () => {
-    openPopup(popupImage);
-});
 
 // Перебор закрытия попапов
 
-buttonClosePopup.forEach(function(button) {
-    button.addEventListener('click', () => {
-        if(popupEdit.classList.contains('popup_is-opened')) {
-            closePopup(popupEdit);
-        } else if(popupNewCard.classList.contains('popup_is-opened')) {
-            closePopup(popupNewCard);
-        } else if(popupImage.classList.contains('popup_is-opened')) {
-            closePopup(popupImage);
+const allPopups = document.querySelectorAll('.popup');
+
+allPopups.forEach((popup) => {
+    popup.addEventListener('mousedown', (evt) => {
+        if (evt.target.classList.contains('popup_opened')) {
+            closePopup(popup);
         }
-    });
+        if (evt.target.classList.contains('popup__close')) {
+            closePopup(popup);
+        }
+    })
 });
 
-// Закрытие попапа через оверлей
-
-document.addEventListener('click', evt => {
-    if (evt.target.classList.contains('popup')) {
-        closePopup(evt.target.closest('.popup'));
-    }
-});
-
-// Закрытие попапа через клавишу "Escape"
-
-document.addEventListener('keydown', evt => {
-    if (evt.key === 'Escape') {
-        const openedPopup = document.querySelector('.popup_is-opened');
-        closePopup(openedPopup);
-    }
-});
 
 // Редактирование профиля
 
