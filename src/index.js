@@ -2,6 +2,7 @@ import './pages/index.css';
 import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, handleOverlay, handleEscape } from './components/modal';
+import { clearValidation, enableValidation } from './components/validation';
 
 
 // DOM узлы
@@ -116,3 +117,17 @@ function previewCardImage(linkValue, nameValue) {
     popupCardCaption.textContent = nameValue;
     openPopup(popupImage);
 }
+
+// Валидация форм
+
+enableValidation({
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+});
+
+clearValidation(editProfile, validationSettings);
+clearValidation(addCard, validationSettings);

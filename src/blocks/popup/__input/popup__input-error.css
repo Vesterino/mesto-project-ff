@@ -1,0 +1,18 @@
+.popup__input-error {
+    padding-block-start: 5px;
+    display: block;
+    color: #ff0000;
+    font-size: 12px;
+    line-height: 14.52px;
+    font-weight: 400;
+    opacity: 0;
+}
+
+.popup__error_visible {
+    opacity: 1;
+}
+
+.popup__input_type_error {
+    border-bottom: 1px solid #ff0000;
+}
+
