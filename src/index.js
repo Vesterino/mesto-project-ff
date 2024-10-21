@@ -3,6 +3,7 @@ import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, handleOverlay, handleEscape } from './components/modal';
 import { clearValidation, enableValidation } from './components/validation';
+import { getProfileUser, getInitialCard, editProfileServer, addCardServer } from './components/api';
 
 
 // DOM узлы
@@ -12,8 +13,12 @@ const cardsList = document.querySelector('.places__list');
 
 // Выведение карточек на страницу
 
-initialCards.forEach(function(card) {
-    cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage));
+getInitialCard()
+.then((cards) => {
+    cards.forEach((card) => {
+        cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage));
+    })
+    console.log(cards)
 });
 
 // Попапы
@@ -40,10 +45,14 @@ popups.forEach(popup => {
 buttonEditProfile.addEventListener('click', () => {
     inputNameProfile.value = titleProfile.textContent;
     inputDescriptionProfile.value = descriptionProfile.textContent;
+    clearValidation(formElementEditProfile, validationSettings);
     openPopup(popupEdit);
 });
 
 buttonNewCard.addEventListener('click', () => {
+    inputCardName.value = '';
+    inputCardLink.value = '';
+    clearValidation(formElementAddCard, validationSettings);
     openPopup(popupNewCard);
 });
 
@@ -73,10 +82,23 @@ const descriptionProfile = document.querySelector('.profile__description');
 
 function editProfile(evt) {
     evt.preventDefault();
-    titleProfile.textContent = inputNameProfile.value;
-    descriptionProfile.textContent = inputDescriptionProfile.value;
-    closePopup(popupEdit);
-    formElementEditProfile.reset();
+
+    const userName = inputNameProfile.value;
+    const userDescription = inputDescriptionProfile.value;
+
+    titleProfile.textContent = userName;
+    descriptionProfile.textContent = userDescription;
+
+    editProfileServer(userName, userDescription)
+    .then((user) => {
+        titleProfile.textContent = user.name;
+        descriptionProfile.textContent = user.about;
+        closePopup(popupEdit);
+        formElementEditProfile.reset();
+    })
+    .catch((err) => {
+        console.error(`Ошибка при обновлении профиля:`, err)
+    })
 }
 
 formElementEditProfile.addEventListener('submit', editProfile);
@@ -93,15 +115,16 @@ function addCard(evt) {
     const cardName = inputCardName.value;
     const cardLink = inputCardLink.value;
 
-    const newCard = {
-        name: cardName,
-        link: cardLink,
-    }
+    addCardServer(cardName, cardLink)
+    .then((newCard) => {
+        const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage);
+        cardsList.prepend(newElement);
 
-    const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage);
-    cardsList.prepend(newElement);
-    closePopup(popupNewCard);
-    formElementAddCard.reset();
+        closePopup(popupNewCard);
+        formElementAddCard.reset();
+    })  
+
+
 }
 
 formElementAddCard.addEventListener('submit', addCard);
@@ -120,7 +143,7 @@ function previewCardImage(linkValue, nameValue) {
 
 // Валидация форм
 
-enableValidation({
+const validationSettings = ({
     formSelector: '.popup__form',
     inputSelector: '.popup__input',
     submitButtonSelector: '.popup__button',
@@ -128,6 +151,3 @@ enableValidation({
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
 });
-
-clearValidation(editProfile, validationSettings);
-clearValidation(addCard, validationSettings);
