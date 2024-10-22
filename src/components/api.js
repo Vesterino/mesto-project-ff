@@ -1,5 +1,7 @@
 const PATH = ('https://nomoreparties.co/v1/wff-cohort-24')
 
+// Запрос получения профиля пользователя
+
 function getProfileUser() {
     return fetch(PATH + '/users/me', {
         headers: {
@@ -7,10 +9,9 @@ function getProfileUser() {
         }
     })
     .then(res => res.json())
-    .then((result) => {
-        console.log(result)
-    });
 };
+
+// Запрос получения карточек
 
 function getInitialCard() {
     return fetch(PATH + '/cards', {
@@ -20,6 +21,8 @@ function getInitialCard() {
     })
     .then(res => res.json())
 }
+
+// Запрос на изменения данных профиля
 
 function editProfileServer(userName, userDescription) {
     return fetch (PATH + '/users/me', {
@@ -34,14 +37,14 @@ function editProfileServer(userName, userDescription) {
         })
     })
     .then(res => {
-        if (!res.ok) {
-            return Promise.reject(`Ошибка: ${res.status}`);
+        if (res.ok) {
+            return res.json();
         }
-        return res.json();
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
 
-getProfileUser();
+// Запрос на добавление карточек
 
 function addCardServer(cardName, cardLink) {
     return fetch (PATH + '/cards', {
@@ -52,15 +55,69 @@ function addCardServer(cardName, cardLink) {
         },
         body: JSON.stringify({
             name: cardName,
-            link: cardLink
+            link: cardLink,
         })
     })
     .then(res => {
-        if (!res.ok) {
-            return Promise.reject(`Ошибка: ${res.status}`);
+        if (res.ok) {
+            return res.json();
         }
-        return res.json();
+        return Promise.reject(`Ошибка: ${res.status}`);
     })
 }
 
-export { getProfileUser, getInitialCard, editProfileServer, addCardServer }
+// Запрос на удаление карточки
+
+function deleteCardServer(cardId) {
+    return fetch (PATH + '/cards/' + cardId, {
+        method: 'DELETE',
+        headers: {
+            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`);
+    })
+}
+
+// Запрос на добавление лайка карточке
+
+function likeCardServer(cardId) {
+    return fetch (PATH + '/cards/likes/' + cardId, {
+        method: 'PUT',
+        headers: {
+            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка ${res.status}`);
+    })
+}
+
+// Запрос на удаление лайка карточке
+
+function disLikeCardServer(cardId) {
+    return fetch(PATH + '/cards/likes/' + cardId , {
+        method: 'DELETE',
+        headers: {
+            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка ${res.status}`);
+    })
+}
+
+export { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer }

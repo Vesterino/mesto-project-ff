@@ -3,7 +3,7 @@ import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, handleOverlay, handleEscape } from './components/modal';
 import { clearValidation, enableValidation } from './components/validation';
-import { getProfileUser, getInitialCard, editProfileServer, addCardServer } from './components/api';
+import { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer } from './components/api';
 
 
 // DOM узлы
@@ -13,13 +13,23 @@ const cardsList = document.querySelector('.places__list');
 
 // Выведение карточек на страницу
 
-getInitialCard()
-.then((cards) => {
+function renderCards(cards, cardId) {
     cards.forEach((card) => {
-        cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage));
+        cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage, cardId));
     })
     console.log(cards)
-});
+};
+
+// Промисы получения данных с сервера
+
+let cardId;
+
+Promise.all([getProfileUser(), getInitialCard()])
+.then(([profileUser, cards]) => {
+    cardId = profileUser._id;
+
+    renderCards(cards, cardId);
+})
 
 // Попапы
 
@@ -103,6 +113,11 @@ function editProfile(evt) {
 
 formElementEditProfile.addEventListener('submit', editProfile);
 
+function completeProfile(user) {
+    titleProfile.textContent = user.name;
+    descriptionProfile.textContent = user.about;
+}
+
 // Добавление карточки
 
 const formElementAddCard = document.forms.newPlace;
@@ -113,18 +128,19 @@ function addCard(evt) {
     evt.preventDefault();
 
     const cardName = inputCardName.value;
-    const cardLink = inputCardLink.value;
+    const cardLink = inputCardLink.value; 
 
     addCardServer(cardName, cardLink)
     .then((newCard) => {
-        const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage);
+        const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage, cardId);
         cardsList.prepend(newElement);
 
         closePopup(popupNewCard);
         formElementAddCard.reset();
-    })  
-
-
+    })
+    .catch((error) => {
+        console.error(`Ошибка при добавлении карточки: ${error}`)
+    })
 }
 
 formElementAddCard.addEventListener('submit', addCard);
