@@ -1,4 +1,5 @@
 .popup__input-error {
+    position: absolute;
     padding-block-start: 5px;
     display: block;
     color: #ff0000;

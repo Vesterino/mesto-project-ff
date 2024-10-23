@@ -10,12 +10,9 @@
 }
 
 .popup__input:last-of-type {
+  margin-block-start: 25px;
   margin-bottom: 0;
 }
-
-/* .popup__input:invalid {
-  border-bottom: 1px solid #ff0000;
-} */
 
 @media screen and (max-width: 568px) {
   .popup__title {
