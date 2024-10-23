@@ -1,36 +1,44 @@
-const PATH = ('https://nomoreparties.co/v1/wff-cohort-24')
-
+const config = {
+    baseUrl: 'https://nomoreparties.co/v1/wff-cohort-24',
+    headers: {
+        authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
+        'Content-Type': 'application/json'
+    }
+}
 // Запрос получения профиля пользователя
 
-function getProfileUser() {
-    return fetch(PATH + '/users/me', {
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3'
-        }
+export const getProfileUser = () => {
+    return fetch(`${config.baseUrl}/users/me`, {
+        headers: config.headers
     })
-    .then(res => res.json())
-};
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+    })
+}
 
 // Запрос получения карточек
 
-function getInitialCard() {
-    return fetch(PATH + '/cards', {
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3'
-        }
+export const getInitialCard = () => {
+    return fetch(`${config.baseUrl}/cards`, {
+        headers: config.headers
     })
-    .then(res => res.json())
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка: ${res.status}`)
+    })
 }
 
 // Запрос на изменения данных профиля
 
-function editProfileServer(userName, userDescription) {
-    return fetch (PATH + '/users/me', {
+export const editProfileServer = (userName, userDescription) => {
+    return fetch (`${config.baseUrl}/users/me`, {
         method: 'PATCH',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        },
+        headers: config.headers,
         body: JSON.stringify({
             name: userName,
             about: userDescription
@@ -46,13 +54,10 @@ function editProfileServer(userName, userDescription) {
 
 // Запрос на добавление карточек
 
-function addCardServer(cardName, cardLink) {
-    return fetch (PATH + '/cards', {
+export const addCardServer = (cardName, cardLink) => {
+    return fetch (`${config.baseUrl}/cards`, {
         method: 'POST',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        },
+        headers: config.headers,
         body: JSON.stringify({
             name: cardName,
             link: cardLink,
@@ -68,13 +73,10 @@ function addCardServer(cardName, cardLink) {
 
 // Запрос на удаление карточки
 
-function deleteCardServer(cardId) {
-    return fetch (PATH + '/cards/' + cardId, {
+export const deleteCardServer = (cardId) => {
+    return fetch (`${config.baseUrl}/cards/${cardId}`, {
         method: 'DELETE',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        }
+        headers: config.headers
     })
     .then(res => {
         if (res.ok) {
@@ -86,13 +88,10 @@ function deleteCardServer(cardId) {
 
 // Запрос на добавление лайка карточке
 
-function likeCardServer(cardId) {
-    return fetch (PATH + '/cards/likes/' + cardId, {
+export const likeCardServer = (cardId) => {
+    return fetch (`${config.baseUrl}/cards/likes/${cardId}`, {
         method: 'PUT',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        }
+        headers: config.headers
     })
     .then(res => {
         if (res.ok) {
@@ -104,13 +103,10 @@ function likeCardServer(cardId) {
 
 // Запрос на удаление лайка карточке
 
-function disLikeCardServer(cardId) {
-    return fetch(PATH + '/cards/likes/' + cardId , {
+export const disLikeCardServer = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}` , {
         method: 'DELETE',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        }
+        headers: config.headers
     })
     .then(res => {
         if (res.ok) {
@@ -122,13 +118,10 @@ function disLikeCardServer(cardId) {
 
 // Запрос на загрузку аватара профиля
 
-function profileAvatarServer(userAvatar) {
-    return fetch(PATH + '/users/me/avatar', {
+export const profileAvatarServer = (userAvatar) => {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
         method: 'PATCH',
-        headers: {
-            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
-            'Content-Type': 'application/json'
-        },
+        headers: config.headers,
         body: JSON.stringify({
             avatar: userAvatar
         })
@@ -140,5 +133,3 @@ function profileAvatarServer(userAvatar) {
         return Promise.reject(`Ошибка ${res.status}`);
     })
 }
-
-export { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer, profileAvatarServer }

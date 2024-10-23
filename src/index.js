@@ -17,8 +17,27 @@ function renderCards(cards, cardId) {
     cards.forEach((card) => {
         cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage, cardId));
     })
-    console.log(cards)
 };
+
+// Выведение данных пользователя
+
+function renderProfileData(user) {
+    titleProfile.textContent = user.name;
+    descriptionProfile.textContent = user.about;
+    linkProfile.style.backgroundImage = `url(${user.avatar})`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    getProfileUser()
+    .then((userData) => {
+        if (userData) {
+            renderProfileData(userData);
+        }
+    })
+    .catch((err) => {
+        console.error('Не удалось воспроизвести данные:', err);
+    })
+})
 
 // Промисы получения данных с сервера
 
@@ -29,6 +48,9 @@ Promise.all([getProfileUser(), getInitialCard()])
     cardId = profileUser._id;
 
     renderCards(cards, cardId);
+})
+.catch((err) => {
+    console.error('Не удалось создать промисы:', err);
 })
 
 // Попапы
@@ -118,12 +140,12 @@ function editProfileAvatar(evt) {
 
     profileAvatarServer(userAvatar)
     .then((user) => {
-        linkProfile.style.backgroundImage = `url("${user.avatar}")`;
+        renderProfileData(user);
         closePopup(popupEditAvatar);
         formElementEditProfileAvatar.reset();
     })
     .catch((err) => {
-        console.error(`Ошибка при обновлении аватара:`, err);
+        console.error('Ошибка при обновлении аватара:', err);
     })
     .finally(() => {
         renderLoading(false, formElementEditProfileAvatar);
@@ -153,13 +175,12 @@ function editProfile(evt) {
 
     editProfileServer(userName, userDescription)
     .then((user) => {
-        titleProfile.textContent = user.name;
-        descriptionProfile.textContent = user.about;
+        renderProfileData(user);
         closePopup(popupEdit);
         formElementEditProfile.reset();
     })
     .catch((err) => {
-        console.error(`Ошибка при обновлении профиля:`, err)
+        console.error('Ошибка при обновлении профиля:', err)
     })
     .finally(() => {
         renderLoading(false, formElementEditProfile);
@@ -190,8 +211,8 @@ function addCard(evt) {
         closePopup(popupNewCard);
         formElementAddCard.reset();
     })
-    .catch((error) => {
-        console.error(`Ошибка при добавлении карточки: ${error}`)
+    .catch((err) => {
+        console.error('Ошибка при добавлении карточки:', err)
     })
     .finally(() => {
         renderLoading(false, formElementAddCard);
