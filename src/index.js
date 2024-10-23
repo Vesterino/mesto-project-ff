@@ -3,7 +3,7 @@ import { initialCards } from './components/cards';
 import { createCard, deleteCard, likeCard } from './components/card';
 import { openPopup, closePopup, handleOverlay, handleEscape } from './components/modal';
 import { clearValidation, enableValidation } from './components/validation';
-import { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer } from './components/api';
+import { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer, profileAvatarServer } from './components/api';
 
 
 // DOM узлы
@@ -33,24 +33,32 @@ Promise.all([getProfileUser(), getInitialCard()])
 
 // Попапы
 
+const popupEditAvatar = document.querySelector('.popup_type_edit-image')
 const popupEdit = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
 
 // Кнопки попапов
 
+const buttonEditAvatar = document.querySelector('.profile__edit-image-button');
 const buttonEditProfile = document.querySelector('.profile__edit-button');
 const buttonNewCard = document.querySelector('.profile__add-button');
 
 // Анимация попапов
 
-const popups = [popupEdit, popupNewCard, popupImage];
+const popups = [popupEditAvatar, popupEdit, popupNewCard, popupImage];
 
 popups.forEach(popup => {
     popup.classList.add('popup_is-animated');
 })
 
 // Слушатели попапов
+
+buttonEditAvatar.addEventListener('click', () => {
+    inputLinkProfileAvatar.value = '';
+    clearValidation(formElementEditProfileAvatar, validationSettings);
+    openPopup(popupEditAvatar);
+})
 
 buttonEditProfile.addEventListener('click', () => {
     inputNameProfile.value = titleProfile.textContent;
@@ -81,6 +89,48 @@ allPopups.forEach((popup) => {
     })
 });
 
+// Процесс загрузки кнопок попапов
+
+
+
+function renderLoading(isLoading, formElement) {
+    const submitButton = formElement.querySelector('.popup__button');
+
+    if (isLoading) {
+        submitButton.textContent = 'Сохранение...'
+    } else {
+        submitButton.textContent = 'Сохранить'
+    }
+}
+
+// Редактирование аватара профиля
+
+const formElementEditProfileAvatar = document.forms.editAvatar;
+const inputLinkProfileAvatar = formElementEditProfileAvatar.link;
+const linkProfile = document.querySelector('.profile__image');
+
+function editProfileAvatar(evt) {
+    evt.preventDefault();
+
+    renderLoading(true, formElementEditProfileAvatar);
+
+    const userAvatar = inputLinkProfileAvatar.value; 
+
+    profileAvatarServer(userAvatar)
+    .then((user) => {
+        linkProfile.style.backgroundImage = `url("${user.avatar}")`;
+        closePopup(popupEditAvatar);
+        formElementEditProfileAvatar.reset();
+    })
+    .catch((err) => {
+        console.error(`Ошибка при обновлении аватара:`, err);
+    })
+    .finally(() => {
+        renderLoading(false, formElementEditProfileAvatar);
+    })
+}
+
+formElementEditProfileAvatar.addEventListener('submit', editProfileAvatar);
 
 // Редактирование профиля
 
@@ -92,6 +142,8 @@ const descriptionProfile = document.querySelector('.profile__description');
 
 function editProfile(evt) {
     evt.preventDefault();
+
+    renderLoading(true, formElementEditProfile);
 
     const userName = inputNameProfile.value;
     const userDescription = inputDescriptionProfile.value;
@@ -109,14 +161,12 @@ function editProfile(evt) {
     .catch((err) => {
         console.error(`Ошибка при обновлении профиля:`, err)
     })
+    .finally(() => {
+        renderLoading(false, formElementEditProfile);
+    })
 }
 
 formElementEditProfile.addEventListener('submit', editProfile);
-
-function completeProfile(user) {
-    titleProfile.textContent = user.name;
-    descriptionProfile.textContent = user.about;
-}
 
 // Добавление карточки
 
@@ -126,6 +176,8 @@ const inputCardLink = formElementAddCard.link;
 
 function addCard(evt) {
     evt.preventDefault();
+
+    renderLoading(true, formElementAddCard);
 
     const cardName = inputCardName.value;
     const cardLink = inputCardLink.value; 
@@ -140,6 +192,9 @@ function addCard(evt) {
     })
     .catch((error) => {
         console.error(`Ошибка при добавлении карточки: ${error}`)
+    })
+    .finally(() => {
+        renderLoading(false, formElementAddCard);
     })
 }
 

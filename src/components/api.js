@@ -120,4 +120,25 @@ function disLikeCardServer(cardId) {
     })
 }
 
-export { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer }
+// Запрос на загрузку аватара профиля
+
+function profileAvatarServer(userAvatar) {
+    return fetch(PATH + '/users/me/avatar', {
+        method: 'PATCH',
+        headers: {
+            authorization: 'f1970c96-cfa2-4dab-8036-191ff0a1b9b3',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            avatar: userAvatar
+        })
+    })
+    .then(res => {
+        if (res.ok) {
+            return res.json();
+        }
+        return Promise.reject(`Ошибка ${res.status}`);
+    })
+}
+
+export { getProfileUser, getInitialCard, editProfileServer, addCardServer, deleteCardServer, likeCardServer, disLikeCardServer, profileAvatarServer }

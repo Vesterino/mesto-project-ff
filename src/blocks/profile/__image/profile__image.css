@@ -1,4 +1,5 @@
 .profile__image {
+  position: relative;
   width: 120px;
   height: 120px;
   -webkit-border-radius: 50%;
@@ -6,7 +7,36 @@
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  margin: 0 29px 0 0;
+}
+
+.profile__edit-image-button {
+  background: transparent;
+  border: none;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+
+.profile__image-edit {
+  display: none;
+  width: 120px;
+  height: 120px;
+  background-color: #000000;
+  opacity: 80%;
+}
+
+.image-edit-img {
+  position: absolute;
+  top: 48px;
+  left: 46px;
+  width: 26px;
+  height: 26px;
+  background-size: cover;
+}
+
+.profile__edit-image-button:hover .profile__image-edit {
+  display: block;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 740px) {

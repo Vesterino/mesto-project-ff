@@ -10,11 +10,17 @@
 <body class="page">
 <div class="page__content">
   <header class="header page__section">
-    <img src="<%=require('./images/logo.svg')%>" alt="Логотип проекта масто" class="logo header__logo">
+    <img src="<%=require('./images/logo.svg')%>" alt="Логотип проекта место" class="logo header__logo">
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>)"></div>
+      <button class="profile__edit-image-button" type="button">
+      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>)">
+        <div class="profile__image-edit">
+          <div class="image-edit-img" style="background-image: url(<%=require('./images/edit-icon.svg')%>)"></div>
+        </div>
+      </div>
+    </button>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
         <button class="profile__edit-button" type="button"></button>
@@ -32,6 +38,17 @@
       © 2021 Mesto Russia
     </p>
   </footer>
+  <div class="popup popup_type_edit-image">
+    <div class="popup__content">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="editAvatar" novalidate>
+        <input id="url-input" type="url" name="link" class="popup__input popup__input_type_url" placeholder="Ссылка на картинку" required>
+        <span class="url-input-error popup__input-error"></span>
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
   <div class="popup popup_type_edit">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
