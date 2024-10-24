@@ -5,18 +5,20 @@ const config = {
         'Content-Type': 'application/json'
     }
 }
+
+const handleResponse = (res) => {
+    if (res.ok) {
+        return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`)
+}
 // Запрос получения профиля пользователя
 
 export const getProfileUser = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         headers: config.headers
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`)
-    })
+    .then(handleResponse);
 }
 
 // Запрос получения карточек
@@ -25,12 +27,7 @@ export const getInitialCard = () => {
     return fetch(`${config.baseUrl}/cards`, {
         headers: config.headers
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`)
-    })
+    .then(handleResponse);
 }
 
 // Запрос на изменения данных профиля
@@ -44,12 +41,7 @@ export const editProfileServer = (userName, userDescription) => {
             about: userDescription
         })
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse);
 }
 
 // Запрос на добавление карточек
@@ -63,57 +55,37 @@ export const addCardServer = (cardName, cardLink) => {
             link: cardLink,
         })
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse);
 }
 
 // Запрос на удаление карточки
 
-export const deleteCardServer = (cardId) => {
-    return fetch (`${config.baseUrl}/cards/${cardId}`, {
+export const deleteCardServer = (userId) => {
+    return fetch (`${config.baseUrl}/cards/${userId}`, {
         method: 'DELETE',
         headers: config.headers
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(handleResponse);
 }
 
 // Запрос на добавление лайка карточке
 
-export const likeCardServer = (cardId) => {
-    return fetch (`${config.baseUrl}/cards/likes/${cardId}`, {
+export const likeCardServer = (userId) => {
+    return fetch (`${config.baseUrl}/cards/likes/${userId}`, {
         method: 'PUT',
         headers: config.headers
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка ${res.status}`);
-    })
+    .then(handleResponse);
 }
 
 // Запрос на удаление лайка карточке
 
-export const disLikeCardServer = (cardId) => {
-    return fetch(`${config.baseUrl}/cards/likes/${cardId}` , {
+export const disLikeCardServer = (userId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${userId}` , {
         method: 'DELETE',
         headers: config.headers
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка ${res.status}`);
-    })
+    .then(handleResponse);
 }
 
 // Запрос на загрузку аватара профиля
@@ -126,10 +98,5 @@ export const profileAvatarServer = (userAvatar) => {
             avatar: userAvatar
         })
     })
-    .then(res => {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка ${res.status}`);
-    })
+    .then(handleResponse);
 }

@@ -6,7 +6,7 @@ const cardTemplate = document.querySelector('#card-template').content;
 
 // Функция создания карточки
 
-function createCard(card, deleteCard, likeCard, previewCardImage, cardId) {
+function createCard(card, deleteCard, likeCard, previewCardImage, userId) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     
     cardElement.querySelector('.card__title').textContent = card.name;
@@ -16,7 +16,7 @@ function createCard(card, deleteCard, likeCard, previewCardImage, cardId) {
 
     const deleteButton = cardElement.querySelector('.card__delete-button');
 
-    if(cardId !== card.owner._id) {
+    if(userId !== card.owner._id) {
         deleteButton.style.display = 'none';
     } else {
         deleteButton.style.display = 'block';
@@ -30,7 +30,7 @@ function createCard(card, deleteCard, likeCard, previewCardImage, cardId) {
     const likeCountElement = likeButton.querySelector('.card__like-count')
     likeCountElement.textContent = card.likes.length; 
 
-    const isLiked = card.likes.some(user => user._id === cardId);
+    const isLiked = card.likes.some(user => user._id === userId);
     if(isLiked) {
         likeButton.classList.add('card__like-button_is-active');
     }
@@ -44,36 +44,32 @@ function createCard(card, deleteCard, likeCard, previewCardImage, cardId) {
 
 // Функция удаления карточки
 
-function deleteCard(cardId, card) {
-    deleteCardServer(cardId)
+function deleteCard(userId, card) {
+    deleteCardServer(userId)
     .then(() => {
         card.remove()
+    })
+    .catch((err) => {
+        console.error(`Ошибка при удалении карточки: ${err}`)
     })
 };
 
 // Функция лайка карточки
 
-function likeCard(cardId, likeButton) {
+function likeCard(userId, likeButton) {
     const isLiked = checkLikeCard(likeButton);
     
-    if(isLiked) {
-        disLikeCardServer(cardId)
-        .then((res) => {
-            updateLike(likeButton, res.likes.length);
-        })
-        .catch((err) => {
-            console.error = `Ошибка при снятии лайка: ${err}`;
-        })
-    } else {
-        likeCardServer(cardId)
-        .then((res) => {
-            updateLike(likeButton, res.likes.length);
-        })
-        .catch((err) => {
-            console.error = `Ошибка при постановке лайка: ${err}`;
-        })
-    }
+    const likeMethod = isLiked ? disLikeCardServer : likeCardServer;
+
+    likeMethod(userId)
+    .then((res) => {
+        updateLike(likeButton, res.likes.length);
+    })
+    .catch((err) => {
+        console.error(`Ошибка при ${isLiked? 'снятии' : 'постановке'} лайка`);
+    })
 }
+
 
 function checkLikeCard(likeButton) {
     return likeButton.classList.contains('card__like-button_is-active');

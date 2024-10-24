@@ -13,9 +13,9 @@ const cardsList = document.querySelector('.places__list');
 
 // Выведение карточек на страницу
 
-function renderCards(cards, cardId) {
+function renderCards(cards, userId) {
     cards.forEach((card) => {
-        cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage, cardId));
+        cardsList.append(createCard(card, deleteCard, likeCard, previewCardImage, userId));
     })
 };
 
@@ -27,27 +27,15 @@ function renderProfileData(user) {
     linkProfile.style.backgroundImage = `url(${user.avatar})`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    getProfileUser()
-    .then((userData) => {
-        if (userData) {
-            renderProfileData(userData);
-        }
-    })
-    .catch((err) => {
-        console.error('Не удалось воспроизвести данные:', err);
-    })
-})
-
 // Промисы получения данных с сервера
 
-let cardId;
+let userId;
 
 Promise.all([getProfileUser(), getInitialCard()])
 .then(([profileUser, cards]) => {
-    cardId = profileUser._id;
-
-    renderCards(cards, cardId);
+    userId = profileUser._id;
+    renderProfileData(profileUser);
+    renderCards(cards, userId);
 })
 .catch((err) => {
     console.error('Не удалось создать промисы:', err);
@@ -98,14 +86,9 @@ buttonNewCard.addEventListener('click', () => {
 
 // Перебор закрытия попапов
 
-const allPopups = document.querySelectorAll('.popup');
-
-allPopups.forEach((popup) => {
+popups.forEach((popup) => {
     popup.addEventListener('mousedown', (evt) => {
-        if (evt.target.classList.contains('popup_opened')) {
-            closePopup(popup);
-        }
-        if (evt.target.classList.contains('popup__close')) {
+        if (evt.target.classList.contains('popup_opened') || evt.target.classList.contains('popup__close')) {
             closePopup(popup);
         }
     })
@@ -118,11 +101,7 @@ allPopups.forEach((popup) => {
 function renderLoading(isLoading, formElement) {
     const submitButton = formElement.querySelector('.popup__button');
 
-    if (isLoading) {
-        submitButton.textContent = 'Сохранение...'
-    } else {
-        submitButton.textContent = 'Сохранить'
-    }
+    submitButton.textContent = isLoading ? 'Сохранение...' : 'Сохранить';
 }
 
 // Редактирование аватара профиля
@@ -205,7 +184,7 @@ function addCard(evt) {
 
     addCardServer(cardName, cardLink)
     .then((newCard) => {
-        const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage, cardId);
+        const newElement = createCard(newCard, deleteCard, likeCard, previewCardImage, userId);
         cardsList.prepend(newElement);
 
         closePopup(popupNewCard);
@@ -235,11 +214,13 @@ function previewCardImage(linkValue, nameValue) {
 
 // Валидация форм
 
-const validationSettings = ({
+const validationSettings = {
     formSelector: '.popup__form',
     inputSelector: '.popup__input',
     submitButtonSelector: '.popup__button',
     inactiveButtonClass: 'popup__button_disabled',
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
-});
+};
+
+enableValidation(validationSettings);
